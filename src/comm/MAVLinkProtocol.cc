@@ -354,28 +354,50 @@ void MAVLinkProtocol::receiveBytes(LinkInterface *link, QByteArray b)
                     mavlink_certificate_t certificate;
                     const char path[] = "authority.cert";
                     mavlink_msg_certificate_decode(&_message, &certificate);
-                    mavlink_read_certificate(path, MAVLINK_GCS_CERTIFICATE);
-
-                    printf("start: %f\n", certificate.start_time);
-                    printf("end: %f\n", certificate.end_time);
-
+                    mavlink_read_certificate(path);
                     static uint8_t cert[sizeof(info_t)];
+
                     //swaped values
-   			        //memcpy(cert, &certificate, sizeof(info_t));
-                    memcpy(&cert[0],&certificate.seq_number,member_size(info_t, seq_number));
-                    memcpy(&cert[member_size(info_t, seq_number)],&certificate.device_id,member_size(info_t, device_id));
-                    memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id)],certificate.device_name,member_size(info_t, device_name));
-                    memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id) + member_size(info_t, device_name)],certificate.subject,member_size(info_t, subject));
-                    memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id) + member_size(info_t, device_name) + member_size(info_t, subject)],certificate.issuer,member_size(info_t, issuer));
-                    memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id) + member_size(info_t, device_name) + member_size(info_t, subject) + member_size(info_t, issuer)],certificate.public_key,member_size(info_t, public_key));
-                    memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id) + member_size(info_t, device_name) + member_size(info_t, subject) + member_size(info_t, issuer) + member_size(info_t, public_key)],certificate.public_key_auth,member_size(info_t, public_key_auth));
-                    memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id) + member_size(info_t, device_name) + member_size(info_t, subject) + member_size(info_t, issuer) + member_size(info_t, public_key) + member_size(info_t, public_key_auth)],&certificate.start_time,member_size(info_t, start_time));
-                    memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id) + member_size(info_t, device_name) + member_size(info_t, subject) + member_size(info_t, issuer) + member_size(info_t, public_key) + member_size(info_t, public_key_auth)+ member_size(info_t, start_time)],&certificate.end_time,member_size(info_t, end_time));
+                    //memcpy(cert, &certificate, sizeof(info_t));
 
-                    mavlink_check_remote_certificate(certificate.start_time, certificate.end_time, cert, certificate.sign, MAVLINK_GCS_CERTIFICATE);
-                    mavlink_set_remote_key(_message.sysid, certificate.public_key);
+                    memcpy(&cert[0], &certificate.seq_number, member_size(info_t, seq_number));
+                    memcpy(&cert[member_size(info_t, seq_number)], &certificate.device_id, member_size(info_t, device_id));
+                    memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id)], certificate.device_name, member_size(info_t, device_name));
+                    memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id) + member_size(info_t, device_name)], certificate.subject, member_size(info_t, subject));
+                    memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id) + member_size(info_t, device_name) + member_size(info_t, subject)], certificate.issuer, member_size(info_t, issuer));
+                    memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id) + member_size(info_t, device_name) + member_size(info_t, subject) + member_size(info_t, issuer)], certificate.public_key, member_size(info_t, public_key));
+                    memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id) + member_size(info_t, device_name) + member_size(info_t, subject) + member_size(info_t, issuer) + member_size(info_t, public_key)], certificate.public_key_auth, member_size(info_t, public_key_auth));
+                    memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id) + member_size(info_t, device_name) + member_size(info_t, subject) + member_size(info_t, issuer) + member_size(info_t, public_key) + member_size(info_t, public_key_auth)], &certificate.start_time, member_size(info_t, start_time));
+                    memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id) + member_size(info_t, device_name) + member_size(info_t, subject) + member_size(info_t, issuer) + member_size(info_t, public_key) + member_size(info_t, public_key_auth) + member_size(info_t, start_time)], &certificate.end_time, member_size(info_t, end_time));
+
+                    if (mavlink_check_remote_certificate(certificate.start_time, certificate.end_time, cert, certificate.sign))
+                    {
+                        mavlink_set_remote_key(_message.sysid, certificate.public_key);
+                        mavlink_device_certificate_t *certificate_auth = mavlink_get_device_certificate();
+
+                        mavlink_message_t message;
+                        mavlink_msg_certificate_pack_chan(
+                            getSystemId(),
+                            getComponentId(),
+                            link->mavlinkChannel(),
+                            &message,
+                            certificate_auth->info.seq_number,
+                            certificate_auth->info.device_id,
+                            certificate_auth->info.device_name,
+                            certificate_auth->info.subject,
+                            certificate_auth->info.issuer,
+                            certificate_auth->info.public_key,
+                            certificate_auth->info.public_key_auth,
+                            certificate_auth->info.start_time,
+                            certificate_auth->info.end_time,
+                            certificate_auth->sign);
+
+                        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+                        int len = mavlink_msg_to_send_buffer(buffer, &message);
+
+                        link->writeBytesSafe((const char *)buffer, len);
+                    }
                 }
-
             }
 
             if (_message.msgid == MAVLINK_MSG_ID_HIGH_LATENCY2)
