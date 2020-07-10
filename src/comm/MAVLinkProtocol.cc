@@ -38,8 +38,6 @@
 #include "MultiVehicleManager.h"
 #include "SettingsManager.h"
 
-#define member_size(type, member) sizeof(((type *)0)->member)
-
 Q_DECLARE_METATYPE(mavlink_message_t)
 
 QGC_LOGGING_CATEGORY(MAVLinkProtocolLog, "MAVLinkProtocolLog")
@@ -337,19 +335,10 @@ void MAVLinkProtocol::receiveBytes(LinkInterface *link, QByteArray b)
 
             if (_message.msgid == MAVLINK_MSG_ID_CERTIFICATE)
             {
-                /*
-				 Check if shared exist
-				 if exist
-				  	skip
-				 else
-				 	get_device_cert
-					check valid
-					compute and save shared 
-				*/
-
+                printf("GOT CERT\n");
                 _startLogging();
 
-                if (mavlink_is_set_remote_key(_message.sysid) == MAVLINK_KEY_EXCHANGE_EMPTY)
+                if (mavlink_is_set_remote_key(0) == MAVLINK_KEY_EXCHANGE_EMPTY)
                 {
                     mavlink_certificate_t certificate;
                     const char path[] = "authority.cert";
@@ -372,30 +361,34 @@ void MAVLinkProtocol::receiveBytes(LinkInterface *link, QByteArray b)
 
                     if (mavlink_check_remote_certificate(certificate.start_time, certificate.end_time, cert, certificate.sign))
                     {
-                        mavlink_set_remote_key(_message.sysid, certificate.public_key);
-                        mavlink_device_certificate_t *certificate_auth = mavlink_get_device_certificate();
+                        mavlink_set_remote_key(0, certificate.public_key); //cannot target key
+                        if (mavlink_is_set_iv(0) == MAVLINK_IV_EMPTY)
+                        {
+                            mavlink_device_certificate_t *certificate_auth = mavlink_get_device_certificate();
 
-                        mavlink_message_t message;
-                        mavlink_msg_certificate_pack_chan(
-                            getSystemId(),
-                            getComponentId(),
-                            link->mavlinkChannel(),
-                            &message,
-                            certificate_auth->info.seq_number,
-                            certificate_auth->info.device_id,
-                            certificate_auth->info.device_name,
-                            certificate_auth->info.subject,
-                            certificate_auth->info.issuer,
-                            certificate_auth->info.public_key,
-                            certificate_auth->info.public_key_auth,
-                            certificate_auth->info.start_time,
-                            certificate_auth->info.end_time,
-                            certificate_auth->sign);
+                            mavlink_message_t message;
+                            mavlink_msg_certificate_gcs_pack_chan(
+                                getSystemId(),
+                                getComponentId(),
+                                link->mavlinkChannel(),
+                                &message,
+                                certificate_auth->info.seq_number,
+                                certificate_auth->info.device_id,
+                                certificate_auth->info.device_name,
+                                certificate_auth->info.subject,
+                                certificate_auth->info.issuer,
+                                certificate_auth->info.public_key,
+                                certificate_auth->info.public_key_auth,
+                                mavlink_compute_iv(0),
+                                certificate_auth->info.start_time,
+                                certificate_auth->info.end_time,
+                                certificate_auth->sign);
 
-                        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
-                        int len = mavlink_msg_to_send_buffer(buffer, &message);
+                            uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+                            int len = mavlink_msg_to_send_buffer(buffer, &message);
 
-                        link->writeBytesSafe((const char *)buffer, len);
+                            link->writeBytesSafe((const char *)buffer, len);
+                        }
                     }
                 }
             }

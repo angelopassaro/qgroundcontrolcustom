@@ -162,6 +162,9 @@ const char* QGCApplication::_settingsVersionKey             = "SettingsVersion";
 
 // Mavlink status structures for entire app
 mavlink_status_t m_mavlink_status[MAVLINK_COMM_NUM_BUFFERS];
+// Storage encryption key for entire app
+key_status_t remote_keys[256];
+
 
 // Qml Singleton factories
 

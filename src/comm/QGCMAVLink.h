@@ -16,6 +16,9 @@
 
 #pragma once
 
+#define ENCRYPTION
+#define MAVLINK_EXTERNAL_KEYS_STORAGE
+
 #define MAVLINK_USE_MESSAGE_INFO
 #define MAVLINK_EXTERNAL_RX_STATUS  // Single m_mavlink_status instance is in QGCApplication.cc
 #include <stddef.h>                 // Hack workaround for Mav 2.0 header problem with respect to offsetof usage
@@ -37,6 +40,8 @@
 
 #include <mavlink_types.h>
 extern mavlink_status_t m_mavlink_status[MAVLINK_COMM_NUM_BUFFERS];
+extern key_status_t remote_keys[256];
+
 #include <mavlink.h>
 
 #ifdef __GNUC__
