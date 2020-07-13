@@ -335,7 +335,6 @@ void MAVLinkProtocol::receiveBytes(LinkInterface *link, QByteArray b)
 
             if (_message.msgid == MAVLINK_MSG_ID_CERTIFICATE)
             {
-                printf("GOT CERT\n");
                 _startLogging();
 
                 if (mavlink_is_set_remote_key(0) == MAVLINK_KEY_EXCHANGE_EMPTY)
