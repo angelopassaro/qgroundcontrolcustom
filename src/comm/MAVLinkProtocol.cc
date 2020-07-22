@@ -354,9 +354,8 @@ void MAVLinkProtocol::receiveBytes(LinkInterface *link, QByteArray b)
                     memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id) + member_size(info_t, device_name)], certificate.subject, member_size(info_t, subject));
                     memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id) + member_size(info_t, device_name) + member_size(info_t, subject)], certificate.issuer, member_size(info_t, issuer));
                     memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id) + member_size(info_t, device_name) + member_size(info_t, subject) + member_size(info_t, issuer)], certificate.public_key, member_size(info_t, public_key));
-                    memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id) + member_size(info_t, device_name) + member_size(info_t, subject) + member_size(info_t, issuer) + member_size(info_t, public_key)], certificate.public_key_auth, member_size(info_t, public_key_auth));
-                    memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id) + member_size(info_t, device_name) + member_size(info_t, subject) + member_size(info_t, issuer) + member_size(info_t, public_key) + member_size(info_t, public_key_auth)], &certificate.start_time, member_size(info_t, start_time));
-                    memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id) + member_size(info_t, device_name) + member_size(info_t, subject) + member_size(info_t, issuer) + member_size(info_t, public_key) + member_size(info_t, public_key_auth) + member_size(info_t, start_time)], &certificate.end_time, member_size(info_t, end_time));
+                    memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id) + member_size(info_t, device_name) + member_size(info_t, subject) + member_size(info_t, issuer) + member_size(info_t, public_key)], &certificate.start_time, member_size(info_t, start_time));
+                    memcpy(&cert[member_size(info_t, seq_number) + member_size(info_t, device_id) + member_size(info_t, device_name) + member_size(info_t, subject) + member_size(info_t, issuer) + member_size(info_t, public_key) + member_size(info_t, start_time)], &certificate.end_time, member_size(info_t, end_time));
 
                     if (mavlink_check_remote_certificate(certificate.start_time, certificate.end_time, cert, certificate.sign))
                     {
@@ -377,7 +376,6 @@ void MAVLinkProtocol::receiveBytes(LinkInterface *link, QByteArray b)
                                 certificate_auth->info.subject,
                                 certificate_auth->info.issuer,
                                 certificate_auth->info.public_key,
-                                certificate_auth->info.public_key_auth,
                                 mavlink_compute_iv(0),
                                 certificate_auth->info.start_time,
                                 certificate_auth->info.end_time,
