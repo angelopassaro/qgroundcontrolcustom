@@ -332,7 +332,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface *link, QByteArray b)
                 mavlink_msg_heartbeat_decode(&_message, &heartbeat);
                 emit vehicleHeartbeatInfo(link, _message.sysid, _message.compid, heartbeat.autopilot, heartbeat.type);
             }
-
+#ifdef ENCRYPTION
             if (_message.msgid == MAVLINK_MSG_ID_CERTIFICATE)
             {
                 _startLogging();
@@ -389,6 +389,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface *link, QByteArray b)
                     }
                 }
             }
+#endif
 
             if (_message.msgid == MAVLINK_MSG_ID_HIGH_LATENCY2)
             {

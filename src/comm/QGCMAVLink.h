@@ -16,7 +16,8 @@
 
 #pragma once
 
-#define ENCRYPTION
+#define TESTENCRYPTION
+#define RC4
 #define MAVLINK_EXTERNAL_KEYS_STORAGE
 
 #define MAVLINK_USE_MESSAGE_INFO
