@@ -52,14 +52,13 @@ void MissionControllerTest::_initForFirmwareType(MAV_AUTOPILOT firmwareType)
     // Master controller pulls offline vehicle info from settings
     qgcApp()->toolbox()->settingsManager()->appSettings()->offlineEditingFirmwareType()->setRawValue(firmwareType);
     _masterController = new PlanMasterController(this);
-    _masterController->setFlyView(false);
     _missionController = _masterController->missionController();
 
     _multiSpyMissionController = new MultiSignalSpy();
     Q_CHECK_PTR(_multiSpyMissionController);
     QCOMPARE(_multiSpyMissionController->init(_missionController, _rgMissionControllerSignals, _cMissionControllerSignals), true);
 
-    _masterController->start();
+    _masterController->start(false /* flyView */);
 
     // All signals should some through on start
     QCOMPARE(_multiSpyMissionController->checkOnlySignalsByMask(visualItemsChangedSignalMask), true);
@@ -82,9 +81,9 @@ void MissionControllerTest::_initForFirmwareType(MAV_AUTOPILOT firmwareType)
     QCOMPARE(settingsItem->childItems()->count(), 0);
 
     // No waypoint lines
-    QmlObjectListModel* simpleFlightPathSegments = _missionController->simpleFlightPathSegments();
-    QVERIFY(simpleFlightPathSegments);
-    QCOMPARE(simpleFlightPathSegments->count(), 0);
+    QmlObjectListModel* waypointLines = _missionController->waypointLines();
+    QVERIFY(waypointLines);
+    QCOMPARE(waypointLines->count(), 0);
 }
 
 void MissionControllerTest::_testEmptyVehicleWorker(MAV_AUTOPILOT firmwareType)
@@ -167,8 +166,6 @@ void MissionControllerTest::_testGimbalRecalc(void)
         QVERIFY(qIsNaN(visualItem->missionGimbalYaw()));
     }
 
-#if 0
-    // FIXME: No longer works due to signal compression
     // Specify gimbal yaw on settings item should generate yaw on all items
     MissionSettingsItem* settingsItem = _missionController->visualItems()->value<MissionSettingsItem*>(0);
     settingsItem->cameraSection()->setSpecifyGimbal(true);
@@ -177,7 +174,6 @@ void MissionControllerTest::_testGimbalRecalc(void)
         VisualMissionItem* visualItem = _missionController->visualItems()->value<VisualMissionItem*>(i);
         QCOMPARE(visualItem->missionGimbalYaw(), 0.0);
     }
-#endif
 }
 
 void MissionControllerTest::_testLoadJsonSectionAvailable(void)

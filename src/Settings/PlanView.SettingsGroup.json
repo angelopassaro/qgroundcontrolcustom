@@ -1,7 +1,3 @@
-{
-    "version":      1,
-    "fileType":  "FactMetaData",
-    "QGC.MetaData.Facts":
 [
 {
     "name":             "displayPresetsTabFirst",
@@ -20,18 +16,5 @@
     "shortDescription": "Allow missions to not require a takeoff item",
     "type":             "bool",
     "defaultValue":     false
-},
-{
-    "name":             "useConditionGate",
-    "shortDescription": "Use MAV_CMD_CONDITION_GATE for pattern generation",
-    "type":             "bool",
-    "defaultValue":     false
-},
-{
-    "name":             "showGimbalOnlyWhenSet",
-    "shortDescription": "Show gimbal yaw visual only when set explicitly for the waypoint",
-    "type":             "bool",
-    "defaultValue":     false
 }
 ]
-}

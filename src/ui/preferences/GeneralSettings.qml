@@ -102,7 +102,7 @@ Rectangle {
                                 QGCLabel { text: modelData }
                             }
                             Repeater {
-                                model:  [ QGroundControl.settingsManager.unitsSettings.horizontalDistanceUnits, QGroundControl.settingsManager.unitsSettings.areaUnits, QGroundControl.settingsManager.unitsSettings.speedUnits, QGroundControl.settingsManager.unitsSettings.temperatureUnits ]
+                                model:  [ QGroundControl.settingsManager.unitsSettings.distanceUnits, QGroundControl.settingsManager.unitsSettings.areaUnits, QGroundControl.settingsManager.unitsSettings.speedUnits, QGroundControl.settingsManager.unitsSettings.temperatureUnits ]
                                 FactComboBox {
                                     Layout.preferredWidth:  _comboFieldWidth
                                     fact:                   modelData
@@ -165,7 +165,7 @@ Rectangle {
                                     text:       qsTr("Map Provider")
                                     width:      _labelWidth
                                 }
-
+                                
                                 QGCComboBox {
                                     id:             mapCombo
                                     model:          QGroundControl.mapEngineManager.mapProviderList
@@ -625,11 +625,6 @@ Rectangle {
                                     Layout.preferredWidth:  _valueFieldWidth
                                     fact:                   QGroundControl.settingsManager.appSettings.defaultMissionItemAltitude
                                 }
-                            }
-
-                            FactCheckBox {
-                                text:   qsTr("Use MAV_CMD_CONDITION_GATE for pattern generation")
-                                fact:   QGroundControl.settingsManager.planViewSettings.useConditionGate
                             }
 
                             FactCheckBox {

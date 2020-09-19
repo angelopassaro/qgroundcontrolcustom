@@ -196,7 +196,7 @@ void APMSensorsComponentController::_stopCalibration(APMSensorsComponentControll
     default:
         // Assume failed
         _hideAllCalAreas();
-        qgcApp()->showAppMessage(tr("Calibration failed. Calibration log will be displayed."));
+        qgcApp()->showMessage(tr("Calibration failed. Calibration log will be displayed."));
         break;
     }
     

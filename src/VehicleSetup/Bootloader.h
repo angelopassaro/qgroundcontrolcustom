@@ -79,7 +79,6 @@ public:
     static const int boardIDKakuteF7 = 123;     ///< Holybro KakuteF7 board, as from USB PID
     static const int boardIDDurandalV1 = 139;   ///< Holybro Durandal-v1 board, as from USB PID
     static const int boardIDModalFCV1 = 41775;  ///< ModalAI FC V1 board, as from USB PID
-    static const int boardIDUVifyCore = 20;     ///< UVify Core board, as from USB PID
 
     /// Simulated board id for V3 which is a V2 board which supports larger flash space
     /// IMPORTANT: Make sure this id does not conflict with any newly added real board ids
@@ -96,7 +95,7 @@ private:
     bool _write(QSerialPort* port, const uint8_t* data, qint64 maxSize);
     bool _write(QSerialPort* port, const uint8_t byte);
     
-    bool _read(QSerialPort* port, uint8_t* data, qint64 maxSize, int readTimeout = _readTimout);
+    bool _read(QSerialPort* port, uint8_t* data, qint64 cBytesExpected, int readTimeout = _readTimout);
     
     bool _sendCommand(QSerialPort* port, uint8_t cmd, int responseTimeout = _responseTimeout);
     bool _getCommandResponse(QSerialPort* port, const int responseTimeout = _responseTimeout);

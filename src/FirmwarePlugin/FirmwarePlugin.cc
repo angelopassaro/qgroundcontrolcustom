@@ -148,6 +148,12 @@ bool FirmwarePlugin::supportsJSButton(void)
     return false;
 }
 
+bool FirmwarePlugin::supportsTerrainFrame(void) const
+{
+    // Generic firmware supports this since we don't know
+    return true;
+}
+
 bool FirmwarePlugin::adjustIncomingMavlinkMessage(Vehicle* vehicle, mavlink_message_t* message)
 {
     Q_UNUSED(vehicle);
@@ -224,14 +230,14 @@ void FirmwarePlugin::setGuidedMode(Vehicle* vehicle, bool guidedMode)
 {
     Q_UNUSED(vehicle);
     Q_UNUSED(guidedMode);
-    qgcApp()->showAppMessage(guided_mode_not_supported_by_vehicle);
+    qgcApp()->showMessage(guided_mode_not_supported_by_vehicle);
 }
 
 void FirmwarePlugin::pauseVehicle(Vehicle* vehicle)
 {
     // Not supported by generic vehicle
     Q_UNUSED(vehicle);
-    qgcApp()->showAppMessage(guided_mode_not_supported_by_vehicle);
+    qgcApp()->showMessage(guided_mode_not_supported_by_vehicle);
 }
 
 void FirmwarePlugin::guidedModeRTL(Vehicle* vehicle, bool smartRTL)
@@ -239,14 +245,14 @@ void FirmwarePlugin::guidedModeRTL(Vehicle* vehicle, bool smartRTL)
     // Not supported by generic vehicle
     Q_UNUSED(vehicle);
     Q_UNUSED(smartRTL);
-    qgcApp()->showAppMessage(guided_mode_not_supported_by_vehicle);
+    qgcApp()->showMessage(guided_mode_not_supported_by_vehicle);
 }
 
 void FirmwarePlugin::guidedModeLand(Vehicle* vehicle)
 {
     // Not supported by generic vehicle
     Q_UNUSED(vehicle);
-    qgcApp()->showAppMessage(guided_mode_not_supported_by_vehicle);
+    qgcApp()->showMessage(guided_mode_not_supported_by_vehicle);
 }
 
 void FirmwarePlugin::guidedModeTakeoff(Vehicle* vehicle, double takeoffAltRel)
@@ -254,7 +260,7 @@ void FirmwarePlugin::guidedModeTakeoff(Vehicle* vehicle, double takeoffAltRel)
     // Not supported by generic vehicle
     Q_UNUSED(vehicle);
     Q_UNUSED(takeoffAltRel);
-    qgcApp()->showAppMessage(guided_mode_not_supported_by_vehicle);
+    qgcApp()->showMessage(guided_mode_not_supported_by_vehicle);
 }
 
 void FirmwarePlugin::guidedModeGotoLocation(Vehicle* vehicle, const QGeoCoordinate& gotoCoord)
@@ -262,19 +268,19 @@ void FirmwarePlugin::guidedModeGotoLocation(Vehicle* vehicle, const QGeoCoordina
     // Not supported by generic vehicle
     Q_UNUSED(vehicle);
     Q_UNUSED(gotoCoord);
-    qgcApp()->showAppMessage(guided_mode_not_supported_by_vehicle);
+    qgcApp()->showMessage(guided_mode_not_supported_by_vehicle);
 }
 
 void FirmwarePlugin::guidedModeChangeAltitude(Vehicle*, double)
 {
     // Not supported by generic vehicle
-    qgcApp()->showAppMessage(guided_mode_not_supported_by_vehicle);
+    qgcApp()->showMessage(guided_mode_not_supported_by_vehicle);
 }
 
 void FirmwarePlugin::startMission(Vehicle*)
 {
     // Not supported by generic vehicle
-    qgcApp()->showAppMessage(guided_mode_not_supported_by_vehicle);
+    qgcApp()->showMessage(guided_mode_not_supported_by_vehicle);
 }
 
 const FirmwarePlugin::remapParamNameMajorVersionMap_t& FirmwarePlugin::paramNameRemapMajorVersionMap(void) const
@@ -304,26 +310,17 @@ QString FirmwarePlugin::vehicleImageCompass(const Vehicle*) const
     return QStringLiteral("/qmlimages/compassInstrumentArrow.svg");
 }
 
-const QVariantList& FirmwarePlugin::toolIndicators(const Vehicle*)
+const QVariantList &FirmwarePlugin::toolBarIndicators(const Vehicle*)
 {
     //-- Default list of indicators for all vehicles.
-    if(_toolIndicatorList.size() == 0) {
-        _toolIndicatorList = QVariantList({
+    if(_toolBarIndicatorList.size() == 0) {
+        _toolBarIndicatorList = QVariantList({
             QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/MessageIndicator.qml")),
             QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/GPSIndicator.qml")),
             QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/TelemetryRSSIIndicator.qml")),
             QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/RCRSSIIndicator.qml")),
             QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/BatteryIndicator.qml")),
-        });
-    }
-    return _toolIndicatorList;
-}
-
-const QVariantList& FirmwarePlugin::modeIndicators(const Vehicle*)
-{
-    //-- Default list of indicators for all vehicles.
-    if(_modeIndicatorList.size() == 0) {
-        _modeIndicatorList = QVariantList({
+            QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/GPSRTKIndicator.qml")),
             QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/ROIIndicator.qml")),
             QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/ArmedIndicator.qml")),
             QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/ModeIndicator.qml")),
@@ -332,7 +329,7 @@ const QVariantList& FirmwarePlugin::modeIndicators(const Vehicle*)
             QVariant::fromValue(QUrl::fromUserInput("qrc:/toolbar/LinkIndicator.qml")),
         });
     }
-    return _modeIndicatorList;
+    return _toolBarIndicatorList;
 }
 
 const QVariantList& FirmwarePlugin::cameraList(const Vehicle*)
@@ -680,19 +677,6 @@ const QVariantList& FirmwarePlugin::cameraList(const Vehicle*)
             this);              // parent
         _cameraList.append(QVariant::fromValue(metaData));
 
-        metaData = new CameraMetaData(
-            tr("Flir Duo R"),
-            160,                // sensorWidth
-            120,                // sensorHeight
-            1920,               // imageWidth
-            1080,               // imageHeight
-            1.9,                // focalLength
-            true,               // true: landscape orientation
-            true,               // true: camera is fixed orientation
-            0,                  // minimum trigger interval
-            this);              // parent
-        _cameraList.append(QVariant::fromValue(metaData));
-
     }
 
     return _cameraList;
@@ -884,7 +868,7 @@ void FirmwarePlugin::_versionFileDownloadFinished(QString& remoteFile, QString& 
         QString currentVersionNumber = QString("%1.%2.%3").arg(vehicle->firmwareMajorVersion())
                 .arg(vehicle->firmwareMinorVersion())
                 .arg(vehicle->firmwarePatchVersion());
-        qgcApp()->showAppMessage(tr("Vehicle is not running latest stable firmware! Running %1, latest stable is %2.").arg(currentVersionNumber, version));
+        qgcApp()->showMessage(tr("Vehicle is not running latest stable firmware! Running %1, latest stable is %2.").arg(currentVersionNumber, version));
     }
 }
 

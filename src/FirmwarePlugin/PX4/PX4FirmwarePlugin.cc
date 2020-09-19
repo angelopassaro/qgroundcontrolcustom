@@ -23,8 +23,6 @@
 #include "RadioComponentController.h"
 #include "QGCCameraManager.h"
 #include "QGCFileDownload.h"
-#include "SettingsManager.h"
-#include "PlanViewSettings.h"
 
 #include <QDebug>
 
@@ -281,7 +279,7 @@ void PX4FirmwarePlugin::getParameterMetaDataVersionInfo(const QString& metaDataF
 
 QList<MAV_CMD> PX4FirmwarePlugin::supportedMissionCommands(void)
 {
-    QList<MAV_CMD> cmds = {
+    return {
         MAV_CMD_NAV_WAYPOINT,
         MAV_CMD_NAV_LOITER_UNLIM, MAV_CMD_NAV_LOITER_TIME, MAV_CMD_NAV_LOITER_TO_ALT,
         MAV_CMD_NAV_LAND, MAV_CMD_NAV_TAKEOFF, MAV_CMD_NAV_RETURN_TO_LAUNCH,
@@ -300,29 +298,23 @@ QList<MAV_CMD> PX4FirmwarePlugin::supportedMissionCommands(void)
         MAV_CMD_NAV_DELAY,
         MAV_CMD_CONDITION_YAW,
     };
-
-    if (qgcApp()->toolbox()->settingsManager()->planViewSettings()->useConditionGate()->rawValue().toBool()) {
-        cmds.append(MAV_CMD_CONDITION_GATE);
-    }
-
-    return cmds;
 }
 
 QString PX4FirmwarePlugin::missionCommandOverrides(MAV_TYPE vehicleType) const
 {
     switch (vehicleType) {
     case MAV_TYPE_GENERIC:
-        return QStringLiteral(":/json/PX4-MavCmdInfoCommon.json");
+        return QStringLiteral(":/json/PX4/MavCmdInfoCommon.json");
     case MAV_TYPE_FIXED_WING:
-        return QStringLiteral(":/json/PX4-MavCmdInfoFixedWing.json");
+        return QStringLiteral(":/json/PX4/MavCmdInfoFixedWing.json");
     case MAV_TYPE_QUADROTOR:
-        return QStringLiteral(":/json/PX4-MavCmdInfoMultiRotor.json");
+        return QStringLiteral(":/json/PX4/MavCmdInfoMultiRotor.json");
     case MAV_TYPE_VTOL_QUADROTOR:
-        return QStringLiteral(":/json/PX4-MavCmdInfoVTOL.json");
+        return QStringLiteral(":/json/PX4/MavCmdInfoVTOL.json");
     case MAV_TYPE_SUBMARINE:
-        return QStringLiteral(":/json/PX4-MavCmdInfoSub.json");
+        return QStringLiteral(":/json/PX4/MavCmdInfoSub.json");
     case MAV_TYPE_GROUND_ROVER:
-        return QStringLiteral(":/json/PX4-MavCmdInfoRover.json");
+        return QStringLiteral(":/json/PX4/MavCmdInfoRover.json");
     default:
         qWarning() << "PX4FirmwarePlugin::missionCommandOverrides called with bad MAV_TYPE:" << vehicleType;
         return QString();
@@ -401,7 +393,7 @@ void PX4FirmwarePlugin::guidedModeTakeoff(Vehicle* vehicle, double takeoffAltRel
 {
     double vehicleAltitudeAMSL = vehicle->altitudeAMSL()->rawValue().toDouble();
     if (qIsNaN(vehicleAltitudeAMSL)) {
-        qgcApp()->showAppMessage(tr("Unable to takeoff, vehicle position not known."));
+        qgcApp()->showMessage(tr("Unable to takeoff, vehicle position not known."));
         return;
     }
 
@@ -424,7 +416,7 @@ void PX4FirmwarePlugin::guidedModeTakeoff(Vehicle* vehicle, double takeoffAltRel
 void PX4FirmwarePlugin::guidedModeGotoLocation(Vehicle* vehicle, const QGeoCoordinate& gotoCoord)
 {
     if (qIsNaN(vehicle->altitudeAMSL()->rawValue().toDouble())) {
-        qgcApp()->showAppMessage(tr("Unable to go to location, vehicle position not known."));
+        qgcApp()->showMessage(tr("Unable to go to location, vehicle position not known."));
         return;
     }
 
@@ -457,11 +449,11 @@ void PX4FirmwarePlugin::guidedModeGotoLocation(Vehicle* vehicle, const QGeoCoord
 void PX4FirmwarePlugin::guidedModeChangeAltitude(Vehicle* vehicle, double altitudeChange)
 {
     if (!vehicle->homePosition().isValid()) {
-        qgcApp()->showAppMessage(tr("Unable to change altitude, home position unknown."));
+        qgcApp()->showMessage(tr("Unable to change altitude, home position unknown."));
         return;
     }
     if (qIsNaN(vehicle->homePosition().altitude())) {
-        qgcApp()->showAppMessage(tr("Unable to change altitude, home position altitude unknown."));
+        qgcApp()->showMessage(tr("Unable to change altitude, home position altitude unknown."));
         return;
     }
 
@@ -484,11 +476,11 @@ void PX4FirmwarePlugin::startMission(Vehicle* vehicle)
 {
     if (_setFlightModeAndValidate(vehicle, missionFlightMode())) {
         if (!_armVehicleAndValidate(vehicle)) {
-            qgcApp()->showAppMessage(tr("Unable to start mission: Vehicle rejected arming."));
+            qgcApp()->showMessage(tr("Unable to start mission: Vehicle rejected arming."));
             return;
         }
     } else {
-        qgcApp()->showAppMessage(tr("Unable to start mission: Vehicle not changing to %1 flight mode.").arg(missionFlightMode()));
+        qgcApp()->showMessage(tr("Unable to start mission: Vehicle not changing to %1 flight mode.").arg(missionFlightMode()));
     }
 }
 
@@ -560,7 +552,7 @@ void PX4FirmwarePlugin::_handleAutopilotVersion(Vehicle* vehicle, mavlink_messag
 
         if (notifyUser) {
             instanceData->versionNotified = true;
-            qgcApp()->showAppMessage(tr("QGroundControl supports PX4 Pro firmware Version %1.%2.%3 and above. You are using a version prior to that which will lead to unpredictable results. Please upgrade your firmware.").arg(supportedMajorVersion).arg(supportedMinorVersion).arg(supportedPatchVersion));
+            qgcApp()->showMessage(tr("QGroundControl supports PX4 Pro firmware Version %1.%2.%3 and above. You are using a version prior to that which will lead to unpredictable results. Please upgrade your firmware.").arg(supportedMajorVersion).arg(supportedMinorVersion).arg(supportedPatchVersion));
         }
     }
 }

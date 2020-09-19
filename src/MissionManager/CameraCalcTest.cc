@@ -9,9 +9,9 @@
 
 #include "CameraCalcTest.h"
 #include "QGCApplication.h"
-#include "PlanMasterController.h"
 
 CameraCalcTest::CameraCalcTest(void)
+    : _offlineVehicle(nullptr)
 {
 
 }
@@ -20,9 +20,8 @@ void CameraCalcTest::init(void)
 {
     UnitTest::init();
 
-    _masterController = new PlanMasterController(this);
-    _controllerVehicle = _masterController->controllerVehicle();
-    _cameraCalc = new CameraCalc(_masterController, "CameraCalcUnitTest" /* settingsGroup */, this);
+    _offlineVehicle = new Vehicle(MAV_AUTOPILOT_PX4, MAV_TYPE_QUADROTOR, qgcApp()->toolbox()->firmwarePluginManager(), this);
+    _cameraCalc = new CameraCalc(_offlineVehicle, "CameraCalcUnitTest" /* settingsGroup */, this);
     _cameraCalc->cameraName()->setRawValue(_cameraCalc->customCameraName());
     _cameraCalc->setDirty(false);
 
@@ -38,6 +37,7 @@ void CameraCalcTest::init(void)
 void CameraCalcTest::cleanup(void)
 {
     delete _cameraCalc;
+    delete _offlineVehicle;
     delete _multiSpy;
 }
 

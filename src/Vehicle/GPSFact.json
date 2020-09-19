@@ -1,7 +1,3 @@
-{
-    "version":      1,
-    "fileType":  "FactMetaData",
-    "QGC.MetaData.Facts":
 [
 {
     "name":             "lat",
@@ -53,4 +49,3 @@
     "type":             "uint32"
 }
 ]
-}

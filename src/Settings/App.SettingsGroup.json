@@ -1,7 +1,3 @@
-{
-    "version":      1,
-    "fileType":  "FactMetaData",
-    "QGC.MetaData.Facts":
 [
 {
     "name":             "offlineEditingFirmwareType",
@@ -22,7 +18,7 @@
 {
     "name":             "offlineEditingCruiseSpeed",
     "shortDescription": "Offline editing cruise speed",
-    "longDescription":  "This value defines the default speed for calculating mission statistics for vehicles which do not support hover or VTOL vehicles in fixed wing mode. It does not modify the flight speed for a specific flight plan.",
+    "longDescription":  "This value defines the default cruising speed for forward flight vehicles for use in calculating mission statistics. It does not modify the flight speed for a specific flight plan.",
     "type":             "double",
     "defaultValue":     15.0,
     "min":              1.0,
@@ -32,7 +28,7 @@
 {
     "name":             "offlineEditingHoverSpeed",
     "shortDescription": "Offline editing hover speed",
-    "longDescription":  "This value defines the default speed for calculating mission statistics for multi-rotor vehicles or VTOL vehicle in multi-rotor mode. It does not modify the flight speed for a specific flight plan.",
+    "longDescription":  "This value defines the default cruising speed for multi-rotor vehicles for use in calculating mission statistics. It does not modify the flight speed for a specific flight plan.",
     "type":             "double",
     "defaultValue":     5.0,
     "min":              1.0,
@@ -280,26 +276,5 @@
     "longDescription":  "If this option is enabled, all Facts will be written to a CSV file with a 1 Hertz frequency.",
     "type":             "bool",
     "defaultValue":     false
-},
-{
-    "name":             "firstRunPromptIdsShown",
-    "shortDescription": "Comma separated list of first run prompt ids which have already been shown.",
-    "type":             "string",
-    "defaultValue":     ""
-},
-{
-    "name":             "forwardMavlink",
-    "shortDescription": "Enable mavlink forwarding",
-    "longDescription":  "Enable mavlink forwarding",
-    "type":             "bool",
-    "defaultValue":     false
-},
-{
-    "name":             "forwardMavlinkHostName",
-    "shortDescription": "Host name",
-    "longDescription":  "Host name to forward mavlink to. i.e: localhost:14445",
-    "type":             "string",
-    "defaultValue":     "localhost:14445"
 }
 ]
-}

@@ -182,6 +182,9 @@ public:
     /// (CompassMot). Default is true.
     virtual bool supportsMotorInterference(void);
 
+    /// Returns true if the firmware supports MAV_FRAME_GLOBAL_TERRAIN_ALT
+    virtual bool supportsTerrainFrame(void) const;
+
     /// Called before any mavlink message is processed by Vehicle such that the firmwre plugin
     /// can adjust any message characteristics. This is handy to adjust or differences in mavlink
     /// spec implementations such that the base code can remain mavlink generic.
@@ -267,15 +270,10 @@ public:
     /// Return the resource file which contains the vehicle icon used in the compass
     virtual QString vehicleImageCompass(const Vehicle* vehicle) const;
 
-    /// Returns the list of toolbar tool indicators associated with a vehicle
-    ///     signals toolIndicatorsChanged
-    /// @return A list of QUrl with the indicators
-    virtual const QVariantList& toolIndicators(const Vehicle* vehicle);
-
-    /// Returns the list of toolbar mode indicators associated with a vehicle
-    ///     signals modeIndicatorsChanged
-    /// @return A list of QUrl with the indicators
-    virtual const QVariantList& modeIndicators(const Vehicle* vehicle);
+    /// Allows the core plugin to override the toolbar indicators
+    ///     signals toolbarIndicatorsChanged
+    /// @return A list of QUrl with the indicators (see MainToolBarIndicators.qml)
+    virtual const QVariantList& toolBarIndicators(const Vehicle* vehicle);
 
     /// Returns a list of CameraMetaData objects for available cameras on the vehicle.
     /// TODO: This should go into QGCCameraManager
@@ -335,8 +333,7 @@ public:
     static const QString px4FollowMeFlightMode;
 
 signals:
-    void toolIndicatorsChanged(void);
-    void modeIndicatorsChanged(void);
+    void toolbarIndicatorsChanged(void);
 
 protected:
     // Arms the vehicle with validation and retries
@@ -357,9 +354,7 @@ protected:
     virtual QString _versionRegex() { return QString(); }
 
 private:
-    QVariantList _toolIndicatorList;
-    QVariantList _modeIndicatorList;
-
+    QVariantList _toolBarIndicatorList;
     static QVariantList _cameraList;    ///< Standard QGC camera list
 };
 

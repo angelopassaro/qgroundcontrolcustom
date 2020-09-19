@@ -22,7 +22,5 @@ public:
 
     DEFINE_SETTINGFACT(displayPresetsTabFirst)
     DEFINE_SETTINGFACT(showMissionItemStatus)
-    DEFINE_SETTINGFACT(useConditionGate)
     DEFINE_SETTINGFACT(takeoffItemNotRequired)
-    DEFINE_SETTINGFACT(showGimbalOnlyWhenSet)
 };

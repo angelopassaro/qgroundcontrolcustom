@@ -86,7 +86,6 @@ Item {
     Connections {
         target: _dialogComponentLoader.item
         onHideDialog: {
-            Qt.inputMethod.hide()
             mainWindowDialog.close()
         }
     }

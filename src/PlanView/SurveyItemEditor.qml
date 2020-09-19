@@ -29,7 +29,7 @@ Rectangle {
     property var    _vehicle:                   QGroundControl.multiVehicleManager.activeVehicle ? QGroundControl.multiVehicleManager.activeVehicle : QGroundControl.multiVehicleManager.offlineEditingVehicle
     property real   _cameraMinTriggerInterval:  missionItem.cameraCalc.minTriggerInterval.rawValue
     property bool   _polygonDone:               false
-    property string _doneAdjusting:             qsTr("Done")
+    property string _doneAdjusting:             qsTr("Done Adjusting")
     property bool   _presetsAvailable:          missionItem.presetNames.length !== 0
 
     function polygonCaptureStarted() {
@@ -77,8 +77,6 @@ Rectangle {
                     text:                   qsTr("Use the Polygon Tools to create the polygon which outlines your survey area.")
                 }
 
-                /*
-                  Trial of new "done" model so leaving for now in case it comes back
                 QGCButton {
                     text:               qsTr("Done With Polygon")
                     Layout.fillWidth:   true
@@ -86,17 +84,13 @@ Rectangle {
                     onClicked: {
                         if (!_presetsAvailable) {
                             missionItem.wizardMode = false
-                            // Trial of no auto select next item
-                            //editorRoot.selectNextNotReadyItem()
+                            editorRoot.selectNextNotReadyItem()
                         }
                         _polygonDone = true
                     }
                 }
-                */
             }
 
-            /*
-            Trial of new "done" model so leaving for now in case it comes back
             ColumnLayout {
                 Layout.fillWidth:   true
                 spacing:            _margin
@@ -172,12 +166,10 @@ Rectangle {
                     enabled:            missionItem.surveyAreaPolygon.isValid
                     onClicked: {
                         missionItem.wizardMode = false
-                        // Trial of no auto select next item
-                        //editorRoot.selectNextNotReadyItem()
+                        editorRoot.selectNextNotReadyItem()
                     }
                 }
             }
-            */
         }
 
         Column {
@@ -279,6 +271,16 @@ Rectangle {
                     anchors.right:  parent.right
                     spacing:        _margin
                     visible:        transectsHeader.checked
+
+                    /*
+              Temporarily removed due to bug https://github.com/mavlink/qgroundcontrol/issues/7005
+            FactCheckBox {
+                text:       qsTr("Split concave polygons")
+                fact:       _splitConcave
+                visible:    _splitConcave.visible
+                property Fact _splitConcave: missionItem.splitConcavePolygons
+            }
+            */
 
                     QGCOptionsComboBox {
                         Layout.fillWidth: true
@@ -395,7 +397,14 @@ Rectangle {
                 visible:            tabBar.currentIndex == 1
 
                 CameraCalcCamera {
-                    cameraCalc: missionItem.cameraCalc
+                    cameraCalc:                     missionItem.cameraCalc
+                    vehicleFlightIsFrontal:         true
+                    distanceToSurfaceLabel:         qsTr("Altitude")
+                    distanceToSurfaceAltitudeMode:  missionItem.followTerrain ?
+                                                        QGroundControl.AltitudeModeAboveTerrain :
+                                                        missionItem.cameraCalc.distanceToSurfaceRelative
+                    frontalDistanceLabel:           qsTr("Trigger Dist")
+                    sideDistanceLabel:              qsTr("Spacing")
                 }
             } // Camera Column
 

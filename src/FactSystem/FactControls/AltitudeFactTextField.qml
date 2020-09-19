@@ -16,13 +16,12 @@ import QGroundControl.Controls      1.0
 import QGroundControl.ScreenTools   1.0
 
 FactTextField {
-    unitsLabel:                 fact ? fact.units : ""
-    extraUnitsLabel:            fact ? _altitudeModeExtraUnits : ""
-    showUnits:                  true
-    showHelp:                   true
+    unitsLabel:         fact ? fact.units : ""
+    extraUnitsLabel:    fact ? _altitudeModeExtraUnits : ""
+    showUnits:          true
+    showHelp:           true
 
-    property int  altitudeMode:             QGroundControl.AltitudeModeNone
-    property bool showAboveTerrainWarning:  true
+    property int altitudeMode: QGroundControl.AltitudeModeNone
 
     readonly property string _altModeNoneExtraUnits:            ""
     readonly property string _altModeRelativeExtraUnits:        qsTr("(Rel)")

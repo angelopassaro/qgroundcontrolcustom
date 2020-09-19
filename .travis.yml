@@ -29,13 +29,13 @@ jobs:
           sudo: required
         - stage: "Build"
           name: "Android 32 bit"
-          dist: xenial
+          dist: trusty
           language: android
           env: SPEC=android-clang CONFIG=installer BITNESS=32 GSTREAMER_NAME=armv7
           sudo: false
         - stage: "Build"
           name: "Android 64 bit"
-          dist: xenial
+          dist: trusty
           language: android
           env: SPEC=android-clang CONFIG=installer BITNESS=64 GSTREAMER_NAME=arm64
           sudo: false
@@ -197,7 +197,12 @@ script:
         echo "Daily build" &&
         export STABLE_OR_DAILY=DailyBuild;
     fi
-  - qmake -r ${TRAVIS_BUILD_DIR}/qgroundcontrol.pro CONFIG+=${CONFIG} CONFIG+=${STABLE_OR_DAILY} -spec ${SPEC};
+  # Due to possible bug in Qt 5.11 WarningsAsErrorsOn is off for Linux builds. Hopefully back on once that is resolved.
+  - if [ "${SPEC}" = "macx-clang" ]; then
+        qmake -r ${TRAVIS_BUILD_DIR}/qgroundcontrol.pro CONFIG+=${CONFIG} CONFIG+=${STABLE_OR_DAILY} CONFIG+=WarningsAsErrorsOn -spec ${SPEC};
+    else
+        qmake -r ${TRAVIS_BUILD_DIR}/qgroundcontrol.pro CONFIG+=${CONFIG} CONFIG+=${STABLE_OR_DAILY} -spec ${SPEC};
+    fi
 
   # compile
   - if [ "${SPEC}" != "macx-ios-clang" ]; then
@@ -212,7 +217,7 @@ script:
     	mkdir -p ~/.config/QtProject/ &&
         cp ${TRAVIS_BUILD_DIR}/test/qtlogging.ini ~/.config/QtProject/ &&
         export QT_FATAL_WARNINGS=1 &&
-        ./staging/qgroundcontrol-start.sh --unittest;
+        ./debug/qgroundcontrol-start.sh --unittest;
     fi
 
 after_success:
@@ -238,7 +243,7 @@ before_deploy:
   # create linux appimage
   - cd ${TRAVIS_BUILD_DIR}
   - if [[ "${SPEC}" = "linux-g++-64" && "${CONFIG}" = "installer" ]]; then
-        ./deploy/create_linux_appimage.sh ${TRAVIS_BUILD_DIR} ${SHADOW_BUILD_DIR}/staging ${SHADOW_BUILD_DIR}/package;
+        ./deploy/create_linux_appimage.sh ${TRAVIS_BUILD_DIR} ${SHADOW_BUILD_DIR}/release ${SHADOW_BUILD_DIR}/release/package;
     fi
 
 deploy:
@@ -249,7 +254,7 @@ deploy:
     secret_access_key:
       secure: BsLXeXUPsCJdX4tawrDnO8OFK5Hk4kzlDTiyH93En6TbjUargVAWDMcHVj7TUhr7+3Tao1W1zb0G4SJe9kHv+jrky0yE72KvoG3YAON0VXWKizxBAKkgHE2RxSTNAwDeKbi2G6YJfNDescBBfX7zEohShdXglQu7CGaUQKRaiI4=
     bucket: qgroundcontrol
-    local_dir: ${SHADOW_BUILD_DIR}/package
+    local_dir: ${SHADOW_BUILD_DIR}/release/package
     upload-dir: builds/${TRAVIS_BRANCH}
     acl: public_read
     region: us-west-2
@@ -265,7 +270,7 @@ deploy:
     secret_access_key:
       secure: BsLXeXUPsCJdX4tawrDnO8OFK5Hk4kzlDTiyH93En6TbjUargVAWDMcHVj7TUhr7+3Tao1W1zb0G4SJe9kHv+jrky0yE72KvoG3YAON0VXWKizxBAKkgHE2RxSTNAwDeKbi2G6YJfNDescBBfX7zEohShdXglQu7CGaUQKRaiI4=
     bucket: qgroundcontrol
-    local_dir: ${SHADOW_BUILD_DIR}/package
+    local_dir: ${SHADOW_BUILD_DIR}/release/package
     upload-dir: latest
     acl: public_read
     region: us-west-2
@@ -281,7 +286,7 @@ deploy:
     secret_access_key:
       secure: BsLXeXUPsCJdX4tawrDnO8OFK5Hk4kzlDTiyH93En6TbjUargVAWDMcHVj7TUhr7+3Tao1W1zb0G4SJe9kHv+jrky0yE72KvoG3YAON0VXWKizxBAKkgHE2RxSTNAwDeKbi2G6YJfNDescBBfX7zEohShdXglQu7CGaUQKRaiI4=
     bucket: qgroundcontrol
-    local_dir: ${SHADOW_BUILD_DIR}/package
+    local_dir: ${SHADOW_BUILD_DIR}/release/package
     upload-dir: ${TRAVIS_BRANCH}
     acl: public_read
     region: us-west-2
@@ -297,8 +302,8 @@ deploy:
       secure: K/Zqr/FCC7QvzFxYvBtCinPkacQq2ubJ2qm982+38Zf/KjibVOF1dEbVdrGZmII6Tg5DaQzNXGYkg5PvYmJgT9xRsqeQjeYIUYqYZpAt+HYWA38AVfMU8jip/1P1wmwqD469nzJOBBa8yfsMs6Ca7tBaNl/zTxCRGnAgEzqtkdQ=
     file_glob: true
     file:
-      - ${SHADOW_BUILD_DIR}/qgc-app/package/qgroundcontrol.*
-      - ${SHADOW_BUILD_DIR}/qgc-app/package/QGroundControl.*
+      - ${SHADOW_BUILD_DIR}/release/package/qgroundcontrol.*
+      - ${SHADOW_BUILD_DIR}/release/package/QGroundControl.*
     skip_cleanup: true
     on:
       tags: true

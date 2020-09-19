@@ -18,6 +18,7 @@ import QGroundControl.Vehicle       1.0
 
 Item {
     // The following properties must be passed in from the Loader
+    // property bool useLightColors
     // property bool autoCenterThrottle - true: throttle will snap back to center when released
 
     property var _activeVehicle: QGroundControl.multiVehicleManager.activeVehicle
@@ -43,6 +44,7 @@ Item {
         height:                 parent.height
         yAxisPositiveRangeOnly: _activeVehicle && !_activeVehicle.rover && !_activeVehicle.sub
         yAxisReCenter:          autoCenterThrottle
+        lightColors:            useLightColors
     }
 
     JoystickThumbPad {
@@ -53,5 +55,6 @@ Item {
         anchors.bottom:         parent.bottom
         width:                  parent.height
         height:                 parent.height
+        lightColors:            useLightColors
     }
 }

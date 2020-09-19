@@ -45,7 +45,7 @@ isEmpty(MAVLINKPATH) {
         MAVLINKPATH     = $$fromfile(user_config.pri, MAVLINKPATH)
         message($$sprintf("Using user-supplied mavlink path '%1' specified in user_config.pri", $$MAVLINKPATH))
     } else {
-        MAVLINKPATH     = $$SOURCE_DIR/$$MAVLINKPATH_REL
+        MAVLINKPATH     = $$BASEDIR/$$MAVLINKPATH_REL
     }
 }
 
@@ -115,22 +115,22 @@ SOURCES += \
 #
 MacBuild {
     INCLUDEPATH += \
-        $$SOURCE_DIR/libs/Frameworks/SDL2.framework/Headers
+        $$BASEDIR/libs/Frameworks/SDL2.framework/Headers
     LIBS += \
-        -F$$SOURCE_DIR/libs/Frameworks \
+        -F$$BASEDIR/libs/Frameworks \
         -framework SDL2
 } else:LinuxBuild {
     PKGCONFIG = sdl2
 } else:WindowsBuild {
-    INCLUDEPATH += $$SOURCE_DIR/libs/sdl2/msvc/include
-    INCLUDEPATH += $$SOURCE_DIR/libs/OpenSSL/Windows/x64/include
-    LIBS += -L$$SOURCE_DIR/libs/sdl2/msvc/lib/x64
+    INCLUDEPATH += $$BASEDIR/libs/sdl2/msvc/include
+    INCLUDEPATH += $$BASEDIR/libs/OpenSSL/Windows/x64/include
+    LIBS += -L$$BASEDIR/libs/sdl2/msvc/lib/x64
     LIBS += -lSDL2
 }
 
 # Include Android OpenSSL libs
 AndroidBuild {
-    include($$SOURCE_DIR/libs/OpenSSL/android_openssl/openssl.pri)
+    include($$BASEDIR/libs/OpenSSL/android_openssl/openssl.pri)
     message("ANDROID_EXTRA_LIBS")
     message($$ANDROID_TARGET_ARCH)
     message($$ANDROID_EXTRA_LIBS)
@@ -157,10 +157,10 @@ contains(DEFINES, QGC_ENABLE_PAIRING) {
         AndroidBuild {
             contains(QT_ARCH, arm) {
                 LIBS += $$ANDROID_EXTRA_LIBS
-                INCLUDEPATH += $$SOURCE_DIR/libs/OpenSSL/Android/arch-armeabi-v7a/include
+                INCLUDEPATH += $$BASEDIR/libs/OpenSSL/Android/arch-armeabi-v7a/include
             } else {
                 LIBS += $$ANDROID_EXTRA_LIBS
-                INCLUDEPATH += $$SOURCE_DIR/libs/OpenSSL/Android/arch-x86/include
+                INCLUDEPATH += $$BASEDIR/libs/OpenSSL/Android/arch-x86/include
             }
         }
     }

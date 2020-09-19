@@ -1,7 +1,3 @@
-{
-    "version":      1,
-    "fileType":  "FactMetaData",
-    "QGC.MetaData.Facts":
 [
 {
     "name":             "FlightSpeed",
@@ -13,4 +9,3 @@
     "defaultValue":     0
 }
 ]
-}

@@ -16,9 +16,10 @@
 
 #pragma once
 
-#define TESTENCRYPTION
-#define RC4
+#define ENCRYPTION
+#ifdef ENCRYPTION
 #define MAVLINK_EXTERNAL_KEYS_STORAGE
+#endif
 
 #define MAVLINK_USE_MESSAGE_INFO
 #define MAVLINK_EXTERNAL_RX_STATUS  // Single m_mavlink_status instance is in QGCApplication.cc
@@ -41,7 +42,9 @@
 
 #include <mavlink_types.h>
 extern mavlink_status_t m_mavlink_status[MAVLINK_COMM_NUM_BUFFERS];
+#ifdef ENCRYPTION
 extern key_status_t remote_keys[256];
+#endif
 
 #include <mavlink.h>
 

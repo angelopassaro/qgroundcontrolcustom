@@ -1,7 +1,3 @@
-{
-    "version":      1,
-    "fileType":  "FactMetaData",
-    "QGC.MetaData.Facts":
 [
 {
     "name":             "autoConnectUDP",
@@ -84,4 +80,3 @@
     "defaultValue":     14401
 }
 ]
-}

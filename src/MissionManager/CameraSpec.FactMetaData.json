@@ -1,7 +1,3 @@
-{
-    "version":      1,
-    "fileType":  "FactMetaData",
-    "QGC.MetaData.Facts":
 [
 {
     "name":             "Name",
@@ -73,4 +69,3 @@
     "defaultValue":     1.0
 }
 ]
-}

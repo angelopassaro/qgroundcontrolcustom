@@ -1,7 +1,7 @@
 {
     "comment":  "Any Firmware, Any Vehicle",
-    "version":  1,
-    "fileType": "MavCmdInfo",
+
+    "version": 1,
 
     "mavCmdInfo": [
         {
@@ -51,7 +51,7 @@
                 "decimalPlaces":    2
             },
             "param4": {
-                "label":            "Yaw",
+                "label":            "Heading",
                 "units":            "deg",
                 "nanUnchanged":     true,
                 "default":          null,
@@ -73,7 +73,7 @@
                 "decimalPlaces":    2
             },
             "param4": {
-                "label":            "Yaw",
+                "label":            "Heading",
                 "units":            "deg",
                 "nanUnchanged":     true,
                 "default":          null,
@@ -100,7 +100,7 @@
                 "decimalPlaces":    2
             },
             "param4": {
-                "label":            "Yaw",
+                "label":            "Heading",
                 "units":            "deg",
                 "nanUnchanged":     true,
                 "default":          null,
@@ -128,7 +128,7 @@
                 "decimalPlaces":    2
             },
             "param4": {
-                "label":            "Yaw",
+                "label":            "Heading",
                 "units":            "deg",
                 "nanUnchanged":     true,
                 "default":          null,
@@ -149,7 +149,6 @@
             "friendlyName":         "Land",
             "description":          "Land vehicle at the specified location.",
             "specifiesCoordinate":  true,
-            "isLandCommand":        true,
             "friendlyEdit":         true,
             "category":             "Basic",
             "param1": {
@@ -159,7 +158,7 @@
                 "decimalPlaces":    2
             },
             "param4": {
-                "label":            "Yaw",
+                "label":            "Heading",
                 "units":            "deg",
                 "nanUnchanged":     true,
                 "default":          null,
@@ -170,9 +169,8 @@
             "id":                   22,
             "rawName":              "MAV_CMD_NAV_TAKEOFF",
             "friendlyName":         "Takeoff",
-            "description":          "Launch from the ground and travel towards the specified takeoff position.",
+            "description":          "Take off from the ground and travel towards the specified position.",
             "specifiesCoordinate":  true,
-            "isTakeoffCommand":     true,
             "friendlyEdit":         true,
             "category":             "Basic",
             "param1": {
@@ -182,7 +180,7 @@
                 "decimalPlaces":    2
             },
             "param4": {
-                "label":            "Yaw",
+                "label":            "Heading",
                 "units":            "deg",
                 "nanUnchanged":     true,
                 "default":          null,
@@ -289,13 +287,12 @@
             "id":                   84,
             "rawName":              "MAV_CMD_NAV_VTOL_TAKEOFF",
             "friendlyName":         "VTOL takeoff",
-            "description":          "Hover straight up to specified altitude, transition to fixed-wing and fly to the specified takeoff location.",
+            "description":          "Takeoff in VTOL mode, transition to forward flight and fly to the specified location.",
             "specifiesCoordinate":  true,
-            "isTakeoffCommand":     true,
             "friendlyEdit":         true,
-            "category":             "Basic",
+            "category":             "VTOL",
             "param4": {
-                "label":            "Yaw",
+                "label":            "Heading",
                 "units":            "deg",
                 "nanUnchanged":     true,
                 "default":          null,
@@ -305,14 +302,13 @@
         {
             "id":                   85,
             "rawName":              "MAV_CMD_NAV_VTOL_LAND",
-            "friendlyName":         "VTOL land",
-            "description":          "Fly to specified location at current altitude, transition to multi-rotor and land.",
+            "friendlyName":         "VTOL transition and land",
+            "description":          "Transition to VTOL mode and land.",
             "specifiesCoordinate":  true,
-            "isLandCommand":        true,
             "friendlyEdit":         true,
-            "category":             "Basic",
+            "category":             "VTOL",
             "param4": {
-                "label":            "Yaw",
+                "label":            "Heading",
                 "units":            "deg",
                 "nanUnchanged":     true,
                 "default":          null,
@@ -404,11 +400,11 @@
         {
             "id":           115,
             "rawName":      "MAV_CMD_CONDITION_YAW",
-            "friendlyName": "Wait for Yaw",
-            "description":  "Delay the mission until the specified yaw is reached.",
+            "friendlyName": "Wait for Heading",
+            "description":  "Delay the mission until the specified heading is reached.",
             "category":     "Conditionals",
             "param1": {
-                "label":            "Yaw",
+                "label":            "Heading",
                 "units":            "deg",
                 "default":          0,
                 "decimalPlaces":    1
@@ -862,20 +858,6 @@
                 "default":          25,
                 "units":            "m",
                 "decimalPlaces":    2
-            },
-            "param2": {
-                "label":            "Shutter",
-                "default":          0,
-                "units":            "msecs",
-                "decimalPlaces":    0
-            },
-            "param3": {
-                "label":            "Trigger",
-                "default":          25,
-                "enumStrings":      "No Trigger,Once Immediately",
-                "enumValues":       "0,1",
-                "default":          0,
-                "decimalPlaces":    0
             }
         },
         {
@@ -1079,22 +1061,6 @@
                 "default":          3,
                 "enumStrings":      "Hover Mode,Plane Mode",
                 "enumValues":       "3,4"
-            }
-        },
-        {
-            "id":                   4501,
-            "rawName":              "MAV_CMD_CONDITION_GATE",
-            "friendlyName":         "Condition Gate",
-            "description":          "Delay mission state machine until gate has been reached.",
-            "specifiesCoordinate":  true,
-            "friendlyEdit":         true,
-            "category":             "Conditionals",
-            "param2": {
-                "label":            "Ignore Alt",
-                "enumStrings":      "False,True",
-                "enumValues":       "0,1",
-                "default":          1,
-                "decimalPlaces":    0
             }
         },
         { "id": 30001, "rawName": "MAV_CMD_PAYLOAD_PREPARE_DEPLOY", "friendlyName": "Payload prepare deploy" },

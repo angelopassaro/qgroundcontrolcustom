@@ -1,7 +1,3 @@
-{
-    "version":      1,
-    "fileType":  "FactMetaData",
-    "QGC.MetaData.Facts":
 [
 {
     "name":             "angle",
@@ -32,4 +28,3 @@
     "defaultValue":     5
 }
 ]
-}

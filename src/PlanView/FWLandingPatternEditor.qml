@@ -312,13 +312,12 @@ Rectangle {
             }
 
             QGCButton {
-                text:               qsTr("Done")
+                text:               qsTr("Done Adjusting")
                 Layout.fillWidth:   true
                 onClicked: {
                     missionItem.wizardMode = false
                     missionItem.landingDragAngleOnly = false
-                    // Trial of no auto select next item
-                    //editorRoot.selectNextNotReadyItem()
+                    editorRoot.selectNextNotReadyItem()
                 }
             }
         }

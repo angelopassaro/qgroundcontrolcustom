@@ -14,6 +14,7 @@
 #include "FactSystemTestGeneric.h"
 #include "FactSystemTestPX4.h"
 //#include "FileDialogTest.h"
+//#include "FlightGearTest.h"
 #include "GeoTest.h"
 #include "LinkManagerTest.h"
 //#include "MessageBoxTest.h"
@@ -48,6 +49,7 @@
 UT_REGISTER_TEST(FactSystemTestGeneric)
 UT_REGISTER_TEST(FactSystemTestPX4)
 //UT_REGISTER_TEST(FileDialogTest)
+//UT_REGISTER_TEST(FlightGearUnitTest)
 UT_REGISTER_TEST(GeoTest)
 UT_REGISTER_TEST(LinkManagerTest)
 //UT_REGISTER_TEST(MessageBoxTest)

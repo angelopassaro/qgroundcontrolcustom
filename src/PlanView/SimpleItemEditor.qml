@@ -19,8 +19,7 @@ Rectangle {
 
     property bool _specifiesAltitude:       missionItem.specifiesAltitude
     property real _margin:                  ScreenTools.defaultFontPixelHeight / 2
-    property bool _supportsTerrainFrame:    missionItem.masterController.supportsTerrain
-    property var  _controllerVehicle:       missionItem.masterController.controllerVehicle
+    property bool _supportsTerrainFrame:    missionItem
 
     property string _altModeRelativeHelpText:       qsTr("Altitude relative to launch altitude")
     property string _altModeAbsoluteHelpText:       qsTr("Altitude above mean sea level")
@@ -59,16 +58,6 @@ Rectangle {
         anchors.left:       parent.left
         anchors.right:      parent.right
         anchors.top:        parent.top
-        spacing:            _margin
-
-        QGCLabel {
-            width:          parent.width
-            wrapMode:       Text.WordWrap
-            font.pointSize: ScreenTools.smallFontPointSize
-            text:           missionItem.rawEdit ?
-                                qsTr("Provides advanced access to all commands/parameters. Be very careful!") :
-                                missionItem.commandDescription
-        }
 
         ColumnLayout {
             anchors.left:       parent.left
@@ -77,7 +66,7 @@ Rectangle {
             visible:            missionItem.isTakeoffItem && missionItem.wizardMode // Hack special case for takeoff item
 
             QGCLabel {
-                text:               qsTr("Move '%1' Takeoff to the %2 location.").arg(_controllerVehicle.vtol ? qsTr("V") : qsTr("T")).arg(_controllerVehicle.vtol ? qsTr("desired") : qsTr("climbout"))
+                text:               qsTr("Move 'T' Takeoff to the %1 location.").arg(missionItem.vehicle.vtol ? qsTr("desired") : qsTr("climbout"))
                 Layout.fillWidth:   true
                 wrapMode:           Text.WordWrap
                 visible:            !initialClickLabel.visible
@@ -87,17 +76,16 @@ Rectangle {
                 text:               qsTr("Ensure clear of obstacles and into the wind.")
                 Layout.fillWidth:   true
                 wrapMode:           Text.WordWrap
-                visible:            !initialClickLabel.visible
+                visible:            !initialClickLabel.visible && !missionItem.vehicle.vtol
             }
 
             QGCButton {
-                text:               qsTr("Done")
+                text:               qsTr("Done Adjusting")
                 Layout.fillWidth:   true
                 visible:            !initialClickLabel.visible
                 onClicked: {
                     missionItem.wizardMode = false
-                    // Trial of no auto select next item
-                    //editorRoot.selectNextNotReadyItem()
+                    editorRoot.selectNextNotReadyItem()
                 }
             }
 
@@ -117,6 +105,15 @@ Rectangle {
             anchors.right:      parent.right
             spacing:            _margin
             visible:            !missionItem.wizardMode
+
+            QGCLabel {
+                width:          parent.width
+                wrapMode:       Text.WordWrap
+                font.pointSize: ScreenTools.smallFontPointSize
+                text:           missionItem.rawEdit ?
+                                    qsTr("Provides advanced access to all commands/parameters. Be very careful!") :
+                                    missionItem.commandDescription
+            }
 
             GridLayout {
                 anchors.left:   parent.left
@@ -163,14 +160,6 @@ Rectangle {
                     anchors.left:       parent.left
                     anchors.right:      parent.right
                     spacing:            _margin
-
-                    QGCLabel {
-                        width:          parent.width
-                        wrapMode:       Text.WordWrap
-                        font.pointSize: ScreenTools.smallFontPointSize
-                        text:           qsTr("Altitude below specifies the approximate altitude of the ground. Normally 0 for landing back at original launch location.")
-                        visible:        missionItem.isLandCommand
-                    }
 
                     Item {
                         width:  altHamburger.x + altHamburger.width
@@ -225,7 +214,7 @@ Rectangle {
                                 text:           qsTr("Terrain Frame")
                                 checkable:      true
                                 checked:        missionItem.altitudeMode === QGroundControl.AltitudeModeTerrainFrame
-                                visible:        _supportsTerrainFrame && (missionItem.specifiesCoordinate || missionItem.specifiesAltitudeOnly)
+                                visible:        missionItem.altitudeMode === QGroundControl.AltitudeModeTerrainFrame
                                 onTriggered:    missionItem.altitudeMode = QGroundControl.AltitudeModeTerrainFrame
                             }
                         }

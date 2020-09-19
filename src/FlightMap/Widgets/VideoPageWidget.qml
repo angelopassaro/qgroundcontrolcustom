@@ -31,8 +31,9 @@ Item {
     anchors.centerIn:   parent
 
     property bool   _communicationLost:     activeVehicle ? activeVehicle.connectionLost : false
-    property bool   _recordingVideo:        QGroundControl.videoManager.recording
-    property bool   _decodingVideo:         QGroundControl.videoManager.decoding
+    property var    _videoReceiver:         QGroundControl.videoManager.videoReceiver
+    property bool   _recordingVideo:        _videoReceiver && _videoReceiver.recording
+    property bool   _videoRunning:          _videoReceiver && _videoReceiver.videoRunning
     property bool   _streamingEnabled:      QGroundControl.settingsManager.videoSettings.streamConfigured
     property var    _dynamicCameras:        activeVehicle ? activeVehicle.dynamicCameras : null
     property int    _curCameraIndex:        _dynamicCameras ? _dynamicCameras.currentCamera : 0
@@ -73,10 +74,10 @@ Item {
             onClicked: {
                 if(checked) {
                     QGroundControl.settingsManager.videoSettings.streamEnabled.rawValue = 1
-                    QGroundControl.videoManager.startVideo()
+                    _videoReceiver.start()
                 } else {
                     QGroundControl.settingsManager.videoSettings.streamEnabled.rawValue = 0
-                    QGroundControl.videoManager.stopVideo()
+                    _videoReceiver.stop()
                 }
             }
         }
@@ -140,7 +141,7 @@ Item {
                 anchors.bottom:     parent.bottom
                 width:              height
                 radius:             _recordingVideo ? 0 : height
-                color:              (_decodingVideo && _streamingEnabled) ? "red" : "gray"
+                color:              (_videoRunning && _streamingEnabled) ? "red" : "gray"
                 SequentialAnimation on opacity {
                     running:        _recordingVideo
                     loops:          Animation.Infinite
@@ -161,14 +162,14 @@ Item {
             }
             MouseArea {
                 anchors.fill:   parent
-                enabled:        _decodingVideo && _streamingEnabled
+                enabled:        _videoRunning && _streamingEnabled
                 onClicked: {
                     if (_recordingVideo) {
-                        QGroundControl.videoManager.stopRecording()
+                        _videoReceiver.stopRecording()
                         // reset blinking animation
                         recordBtnBackground.opacity = 1
                     } else {
-                        QGroundControl.videoManager.startRecording(videoFileName.text)
+                        _videoReceiver.startRecording(videoFileName.text)
                     }
                 }
             }

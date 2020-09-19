@@ -22,11 +22,12 @@ Rectangle {
 
     property var    _masterControler:               masterController
     property var    _missionController:             _masterControler.missionController
-    property var    _controllerVehicle:             _masterControler.controllerVehicle
-    property bool   _vehicleHasHomePosition:        _controllerVehicle.homePosition.isValid
-    property bool   _enableOfflineVehicleCombos:    _noMissionItemsAdded
-    property bool   _showCruiseSpeed:               !_controllerVehicle.multiRotor
-    property bool   _showHoverSpeed:                _controllerVehicle.multiRotor || _controllerVehicle.vtol
+    property var    _missionVehicle:                _masterControler.controllerVehicle
+    property bool   _vehicleHasHomePosition:        _missionVehicle.homePosition.isValid
+    property bool   _offlineEditing:                _missionVehicle.isOfflineEditingVehicle
+    property bool   _enableOfflineVehicleCombos:    _offlineEditing && _noMissionItemsAdded
+    property bool   _showCruiseSpeed:               !_missionVehicle.multiRotor
+    property bool   _showHoverSpeed:                _missionVehicle.multiRotor || _missionVehicle.vtol
     property bool   _multipleFirmware:              QGroundControl.supportedFirmwareCount > 2
     property bool   _multipleVehicleTypes:          QGroundControl.supportedVehicleCount > 1
     property real   _fieldWidth:                    ScreenTools.defaultFontPixelWidth * 16
@@ -35,9 +36,9 @@ Rectangle {
     property var    _fileExtension:                 QGroundControl.settingsManager.appSettings.missionFileExtension
     property var    _appSettings:                   QGroundControl.settingsManager.appSettings
     property bool   _waypointsOnlyMode:             QGroundControl.corePlugin.options.missionWaypointsOnly
-    property bool   _showCameraSection:             (_waypointsOnlyMode || QGroundControl.corePlugin.showAdvancedUI) && !_controllerVehicle.apmFirmware
+    property bool   _showCameraSection:             (_waypointsOnlyMode || QGroundControl.corePlugin.showAdvancedUI) && !_missionVehicle.apmFirmware
     property bool   _simpleMissionStart:            QGroundControl.corePlugin.options.showSimpleMissionStart
-    property bool   _showFlightSpeed:               !_controllerVehicle.vtol && !_simpleMissionStart && !_controllerVehicle.apmFirmware
+    property bool   _showFlightSpeed:               !_missionVehicle.vtol && !_simpleMissionStart && !_missionVehicle.apmFirmware
 
     readonly property string _firmwareLabel:    qsTr("Firmware")
     readonly property string _vehicleLabel:     qsTr("Vehicle")
@@ -111,7 +112,7 @@ Rectangle {
                 anchors.left:   parent.left
                 anchors.right:  parent.right
                 text:           qsTr("Vehicle Info")
-                visible:        !_waypointsOnlyMode
+                visible:        _offlineEditing && !_waypointsOnlyMode
                 checked:        false
             }
 
@@ -132,11 +133,8 @@ Rectangle {
                     fact:                   QGroundControl.settingsManager.appSettings.offlineEditingFirmwareType
                     indexModel:             false
                     Layout.preferredWidth:  _fieldWidth
-                    visible:                _multipleFirmware && _enableOfflineVehicleCombos
-                }
-                QGCLabel {
-                    text:       _controllerVehicle.firmwareTypeString
-                    visible:    _multipleFirmware && !_enableOfflineVehicleCombos
+                    visible:                _multipleFirmware
+                    enabled:                _enableOfflineVehicleCombos
                 }
 
                 QGCLabel {
@@ -148,11 +146,8 @@ Rectangle {
                     fact:                   QGroundControl.settingsManager.appSettings.offlineEditingVehicleType
                     indexModel:             false
                     Layout.preferredWidth:  _fieldWidth
-                    visible:                _multipleVehicleTypes && _enableOfflineVehicleCombos
-                }
-                QGCLabel {
-                    text:       _controllerVehicle.vehicleTypeString
-                    visible:    _multipleVehicleTypes && !_enableOfflineVehicleCombos
+                    visible:                _multipleVehicleTypes
+                    enabled:                _enableOfflineVehicleCombos
                 }
 
                 QGCLabel {

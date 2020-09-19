@@ -1,7 +1,6 @@
-import QtQuick                  2.12
+import QtQuick                  2.3
 import QtQuick.Controls         1.2
 
-import QGroundControl               1.0
 import QGroundControl.Palette       1.0
 import QGroundControl.ScreenTools   1.0
 
@@ -18,8 +17,6 @@ Item {
 
     property real   _centerXY:              width / 2
     property bool   _processTouchPoints:    false
-    property color  _fgColor:               QGroundControl.globalPalette.text
-    property color  _bgColor:               QGroundControl.globalPalette.window
     property real   stickPositionX:         _centerXY
     property real   stickPositionY:         yAxisReCenter ? _centerXY : height
 
@@ -90,37 +87,13 @@ Item {
 
     Image {
         anchors.fill:       parent
-        source:             "/res/JoystickBezelLight.png"
+        source:             lightColors ? "/res/JoystickBezel.png" : "/res/JoystickBezelLight.png"
         mipmap:             true
         smooth:             true
     }
 
-    Rectangle {
-        anchors.fill:       parent
-        radius:             width / 2
-        color:              _bgColor
-        opacity:            0.5
-
-        Rectangle {
-            anchors.margins:    parent.width / 4
-            anchors.fill:       parent
-            radius:             width / 2
-            border.color:       _fgColor
-            border.width:       2
-            color:              "transparent"
-        }
-
-        Rectangle {
-            anchors.fill:       parent
-            radius:             width / 2
-            border.color:       _fgColor
-            border.width:       2
-            color:              "transparent"
-        }
-    }
-
     QGCColoredImage {
-        color:                      _fgColor
+        color:                      lightColors ? "white" : "black"
         visible:                    yAxisPositiveRangeOnly
         height:                     ScreenTools.defaultFontPixelHeight
         width:                      height
@@ -134,7 +107,7 @@ Item {
     }
 
     QGCColoredImage {
-        color:                      _fgColor
+        color:                      lightColors ? "white" : "black"
         visible:                    yAxisPositiveRangeOnly
         height:                     ScreenTools.defaultFontPixelHeight
         width:                      height
@@ -148,7 +121,7 @@ Item {
     }
 
     QGCColoredImage {
-        color:                      _fgColor
+        color:                      lightColors ? "white" : "black"
         visible:                    yAxisPositiveRangeOnly
         height:                     ScreenTools.defaultFontPixelHeight
         width:                      height
@@ -162,7 +135,7 @@ Item {
     }
 
     QGCColoredImage {
-        color:                      _fgColor
+        color:                      lightColors ? "white" : "black"
         visible:                    yAxisPositiveRangeOnly
         height:                     ScreenTools.defaultFontPixelHeight
         width:                      height
@@ -176,14 +149,31 @@ Item {
     }
 
     Rectangle {
-        width:          hatWidth
-        height:         hatWidth
-        radius:         hatWidthHalf
-        border.color:   _fgColor
-        border.width:   1
-        color:          Qt.rgba(_fgColor.r, _fgColor.g, _fgColor.b, 0.5)
-        x:              stickPositionX - hatWidthHalf
-        y:              stickPositionY - hatWidthHalf
+        anchors.margins:    parent.width / 4
+        anchors.fill:       parent
+        radius:             width / 2
+        border.color:       mapPal.thumbJoystick
+        border.width:       2
+        color:              Qt.rgba(0,0,0,0)
+    }
+
+    Rectangle {
+        anchors.fill:       parent
+        radius:             width / 2
+        border.color:       mapPal.thumbJoystick
+        border.width:       2
+        color:              Qt.rgba(0,0,0,0)
+    }
+
+    Rectangle {
+        width:  hatWidth
+        height: hatWidth
+        radius: hatWidthHalf
+        border.color: lightColors ? "white" : "black"
+        border.width: 1
+        color:  mapPal.thumbJoystick
+        x:      stickPositionX - hatWidthHalf
+        y:      stickPositionY - hatWidthHalf
 
         readonly property real hatWidth:        ScreenTools.defaultFontPixelHeight
         readonly property real hatWidthHalf:    ScreenTools.defaultFontPixelHeight / 2
